@@ -1,0 +1,25 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: test-open-webui
+    ports:
+      - "13000:8080"
+    environment:
+      - OPENAI_API_BASE_URL=http://host.docker.internal:8001/v1
+      - OPENAI_API_KEY=sk-test-key
+      - ENABLE_OLLAMA_API=False
+      # Disable Auth for easy testing (Single User Mode)
+      - WEBUI_AUTH=False
+      # Disable Costly Background Tasks to prevent rate limiting and extra costs
+      - ENABLE_TITLE_GENERATION=False
+      - ENABLE_TAGS_GENERATION=False
+      - ENABLE_SEARCH_QUERY_GENERATION=False
+      - ENABLE_AUTOCOMPLETE_GENERATION=False
+      - ENABLE_FOLLOW_UP_GENERATION=False
+      - ENABLE_IMAGE_PROMPT_GENERATION=False
+      # Disable other distractions
+      - ENABLE_COMMUNITY_SHARING=False
+      - SHOW_ADMIN_DETAILS=False
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

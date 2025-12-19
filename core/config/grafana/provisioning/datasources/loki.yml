@@ -1,0 +1,17 @@
+# config/grafana/provisioning/datasources/loki.yml
+
+# Этот файл автоматически настроит Grafana при первом запуске
+
+apiVersion: 1
+
+datasources:
+  - name: Loki # Название источника данных в UI Grafana
+    type: loki
+    access: proxy # Grafana будет сама делать запросы к Loki
+    orgId: 1
+    url: http://loki:3100 # Адрес Loki внутри Docker-сети
+    basicAuth: false
+    isDefault: true # Сделать этот источник данных основным
+    jsonData:
+      maxLines: 1000
+    editable: true

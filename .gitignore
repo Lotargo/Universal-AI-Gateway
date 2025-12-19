@@ -1,0 +1,25 @@
+# Virtual Environment
+.venv/
+venv/
+deploy_infra.sh
+# Python cache
+__pycache__/
+*.pyc
+
+# IDE files
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Log files
+app.log
+*.log
+*.env
+!keys_pool/*.env
+# Performance Tests
+tests/performance/results_*
+tests/performance/*.csv

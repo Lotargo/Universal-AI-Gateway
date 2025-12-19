@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universal AI Gateway</title>
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        h1 {
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+            background: #f8fafc;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: white;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: translateY(1px);
+        }
+
+        button.secondary {
+            background-color: white;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            margin-top: 1rem;
+        }
+
+        button.secondary:hover {
+            background-color: #eff6ff;
+        }
+
+        .token-box {
+            background: #f1f5f9;
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-family: 'Fira Code', monospace;
+            word-break: break-all;
+            color: var(--text-color);
+            margin: 1rem 0;
+            position: relative;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        .result-box {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success-msg {
+            color: var(--success-color);
+            font-weight: 600;
+            margin-top: 1rem;
+        }
+
+        .error-msg {
+            color: var(--error-color);
+            margin-top: 1rem;
+            font-size: 0.9rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logout-link {
+            display: inline-block;
+            margin-top: 1.5rem;
+            color: var(--text-muted);
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        .logout-link:hover {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="loading-container">
+    <p>Loading...</p>
+</div>
+
+<!-- Registration Form -->
+<div class="container hidden" id="register-container">
+    <h1>Universal AI Gateway</h1>
+    <p>Register to obtain your API Key and access the gateway.</p>
+
+    <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" placeholder="Enter your username" />
+    </div>
+
+    <button onclick="register()">Create Account</button>
+    <p id="reg-error" class="error-msg"></p>
+</div>
+
+<!-- Dashboard (LoggedIn) -->
+<div class="container hidden" id="dashboard-container">
+    <h1>Welcome, <span id="display-username">User</span>!</h1>
+    <p>You are authenticated. Here is your API Key.</p>
+
+    <div class="input-group">
+        <label>Your API Key</label>
+        <div class="token-box" id="token-display"></div>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">
+            ⚠️ Keep this key safe. You will need it for all API requests.
+        </p>
+    </div>
+
+    <button class="secondary" onclick="showKeySection()">Manage Provider Keys</button>
+
+    <div onclick="logout()" class="logout-link">Log out (Clear stored key)</div>
+</div>
+
+<!-- Add Keys Section -->
+<div class="container hidden" id="keys-container">
+    <h1>Provider Keys</h1>
+    <p>Add your own API keys to bypass system limits.</p>
+
+    <div class="input-group">
+        <label for="provider-select">Provider</label>
+        <select id="provider-select">
+            <option value="openai">OpenAI</option>
+            <option value="google">Google Gemini</option>
+            <option value="anthropic">Anthropic</option>
+            <option value="mistral">Mistral</option>
+            <option value="groq">Groq</option>
+        </select>
+    </div>
+
+    <div class="input-group">
+        <label for="provider-key">API Key</label>
+        <input type="password" id="provider-key" placeholder="sk-..." />
+    </div>
+
+    <button onclick="addKey()">Save Key</button>
+    <button class="secondary" onclick="showDashboard()">Back to Dashboard</button>
+
+    <p id="key-msg" class="success-msg"></p>
+</div>
+
+<script>
+    // Configuration
+    const STORAGE_KEY = 'universal_ai_gateway_auth';
+
+    // Determine Base URL
+    const isFileProtocol = window.location.protocol === 'file:';
+    // If accessed via file, default to localhost:8001. If accessed via http/https, use relative path.
+    const BASE_URL = isFileProtocol ? 'http://localhost:8001' : '';
+
+    // State
+    let currentUser = null;
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        document.getElementById('loading-container').classList.add('hidden');
+
+        if (stored) {
+            try {
+                currentUser = JSON.parse(stored);
+                showDashboard();
+            } catch (e) {
+                console.error("Invalid stored auth", e);
+                localStorage.removeItem(STORAGE_KEY);
+                showRegister();
+            }
+        } else {
+            showRegister();
+        }
+    });
+
+    function showRegister() {
+        hideAll();
+        document.getElementById('register-container').classList.remove('hidden');
+    }
+
+    function showDashboard() {
+        hideAll();
+        document.getElementById('display-username').innerText = currentUser.username;
+        document.getElementById('token-display').innerText = currentUser.token;
+        document.getElementById('dashboard-container').classList.remove('hidden');
+    }
+
+    function showKeySection() {
+        hideAll();
+        document.getElementById('keys-container').classList.remove('hidden');
+        document.getElementById('key-msg').innerText = "";
+    }
+
+    function hideAll() {
+        document.getElementById('register-container').classList.add('hidden');
+        document.getElementById('dashboard-container').classList.add('hidden');
+        document.getElementById('keys-container').classList.add('hidden');
+    }
+
+    function logout() {
+        if (confirm("Are you sure? If you haven't saved your key elsewhere, you will lose access to this account.")) {
+            localStorage.removeItem(STORAGE_KEY);
+            currentUser = null;
+            showRegister();
+        }
+    }
+
+    async function register() {
+        const usernameInput = document.getElementById('username');
+        const username = usernameInput.value.trim();
+        const errorField = document.getElementById('reg-error');
+
+        if (!username) {
+            errorField.innerText = "Please enter a username.";
+            return;
+        }
+
+        try {
+            errorField.innerText = "";
+            const res = await fetch(BASE_URL + '/v1/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: username })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || res.statusText);
+            }
+
+            const data = await res.json();
+            currentUser = data;
+
+            // Persist
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
+
+            showDashboard();
+            usernameInput.value = "";
+
+        } catch (e) {
+            console.error(e);
+            errorField.innerText = "Error: " + e.message;
+        }
+    }
+
+    async function addKey() {
+        const provider = document.getElementById('provider-select').value;
+        const keyInput = document.getElementById('provider-key');
+        const key = keyInput.value.trim();
+        const msgField = document.getElementById('key-msg');
+
+        if (!key) {
+            msgField.innerText = "Please enter a key.";
+            msgField.style.color = "var(--error-color)";
+            return;
+        }
+
+        try {
+            msgField.innerText = "Saving...";
+            msgField.style.color = "var(--text-muted)";
+
+            const res = await fetch(BASE_URL + '/v1/user/keys', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + currentUser.token
+                },
+                body: JSON.stringify({ [provider]: key })
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || res.statusText);
+            }
+
+            msgField.innerText = "✅ Key saved successfully!";
+            msgField.style.color = "var(--success-color)";
+            keyInput.value = "";
+
+        } catch (e) {
+            msgField.innerText = "❌ Error: " + e.message;
+            msgField.style.color = "var(--error-color)";
+        }
+    }
+</script>
+
+</body>
+</html>

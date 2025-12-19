@@ -1,0 +1,44 @@
+// core/config/alloy/config.alloy
+
+// Server configuration for Alloy's internal metrics and listening ports
+logging {
+  level  = "info"
+  format = "logfmt"
+}
+
+// Discovery: Find Docker containers
+discovery.docker "linux_containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+// Relabeling: Clean up labels similar to Promtail config
+discovery.relabel "k8s_containers" {
+  targets = discovery.docker.linux_containers.targets
+
+  // 1. Prefer explicit 'service_name' label if present
+  rule {
+    source_labels = ["__meta_docker_container_label_service_name"]
+    target_label  = "service_name"
+  }
+
+  // 2. Fallback to container name if service_name is missing
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container_name"
+  }
+}
+
+// Scrape: Collect logs from discovered targets
+loki.source.docker "default" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.k8s_containers.output
+  forward_to = [loki.write.local.receiver]
+}
+
+// Output: Send logs to Loki
+loki.write "local" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}

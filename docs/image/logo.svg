@@ -1,0 +1,71 @@
+<svg width="800" height="200" viewBox="0 0 800 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&amp;display=swap');
+
+      .text-title {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 700;
+        font-size: 48px;
+        fill: #333333;
+      }
+
+      .text-subtitle {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        font-weight: 400;
+        font-size: 20px;
+        fill: #666666;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+      }
+
+      .shape {
+        fill: none;
+        stroke: #800020;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-dasharray: 600;
+        stroke-dashoffset: 600;
+        animation: draw 6s ease-in-out infinite;
+      }
+
+      .shape-shadow {
+        fill: none;
+        stroke: #E0E0E0;
+        stroke-width: 8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+
+      @keyframes draw {
+        0% { stroke-dashoffset: 600; opacity: 0; }
+        10% { opacity: 1; }
+        50% { stroke-dashoffset: 0; }
+        90% { opacity: 1; }
+        100% { stroke-dashoffset: 0; opacity: 0; }
+      }
+    </style>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="200" fill="#ffffff" rx="10" />
+
+  <!-- Logo Container (Left) -->
+  <g transform="translate(80, 50)">
+    <!-- Abstract "Gate" / Impossible Triangle Representation -->
+    <!-- Using a stylized hexagonal path that implies depth -->
+
+    <!-- Static Shadow/Base layer for reference -->
+    <path class="shape-shadow" d="M50 10 L90 30 L90 80 L50 100 L10 80 L10 30 Z M50 100 L50 50 M10 30 L50 50 M90 30 L50 50" transform="scale(1.2) translate(-10, -10)" />
+
+    <!-- Animated Path: Loops around the geometry -->
+    <path class="shape" d="M50 10 L90 30 L90 80 L50 100 L10 80 L10 30 Z M50 100 L50 50 M10 30 L50 50 M90 30 L50 50" transform="scale(1.2) translate(-10, -10)" />
+  </g>
+
+  <!-- Text Container (Right) -->
+  <g transform="translate(220, 110)">
+    <text x="0" y="0" class="text-title">Universal AI Gateway</text>
+    <text x="5" y="35" class="text-subtitle">Agent Operating System</text>
+  </g>
+</svg>
